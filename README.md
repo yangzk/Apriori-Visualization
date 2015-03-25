@@ -22,12 +22,12 @@ Spring.pde -- Spring class which connects two nodes
   
   numNodes -- total number of nodes include those need to be pruned
   
-  Node
-  
-    Name -- name of items, e.g. {1 2 3}
+    Node
     
-    ID -- ID of the node, which unique with its depth and index, e.g. {0 1}
-    
-    frequency -- frequency of the node, if it is pruned with absence of subset in parent layer, frequency = -1
-    
-    parentID -- parentID
+      Name -- name of items, e.g. {1 2 3}
+      
+      ID -- ID of the node, which unique with its depth and index, e.g. {0 1}
+      
+      frequency -- frequency of the node, if it is pruned with absence of subset in parent layer, frequency = -1
+      
+      parentID -- parentID
