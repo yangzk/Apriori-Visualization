@@ -2,7 +2,7 @@
 
 This is an algorithm to visualize the Apriori Algorithm developed with Processing (processing.org). It contains these files:
 
-  JsonTest.pde -- the main file to run. 
+  JsonTest.pde -- the main file to run with these parameters to modify. 
   
     widthW -- window width
     
