@@ -2,7 +2,7 @@
 
 This is an algorithm to visualize the Apriori Algorithm developed with Processing (processing.org). It contains these files:
 
-  JsonTest.pde -- the main file to run with these parameters to modify. 
+  JsonTest.pde -- the main file to run with the following parameters to modify 
   
     widthW -- window width
     
@@ -12,9 +12,12 @@ This is an algorithm to visualize the Apriori Algorithm developed with Processin
     
     speed -- draw speed 1 to 500
   
+
 Node.pde -- Node class
 
+
 Spring.pde -- Spring class which connects two nodes
+
 
 ./data/test.json -- the node information to read during the algorithm. It is a JSON format with the following structure:
 
