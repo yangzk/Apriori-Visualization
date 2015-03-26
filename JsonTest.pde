@@ -76,9 +76,10 @@ void setup() {
      
   
      setParameters();
-     nodeDelay = (int) 500/speed;
-     displayDelay = 1500/speed;
+     nodeDelay =   500/speed;
+     displayDelay =  1500/speed;
      makeControls();
+     
   
      float minwidthW =  widthW * minWidthCoeff;
 
