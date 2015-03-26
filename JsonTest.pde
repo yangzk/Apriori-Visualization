@@ -1,35 +1,50 @@
+import controlP5.*;
+ 
+
 import java.io.*;
 import java.util.*;
 
 JSONObject json;
 JSONArray jnodes;
 
+
+//things to control:
+// 1. draw speed
+// 2. pause draw
+// 3. choose to draw all parents
+// 4. start buttom
+
 int widthW = 800;
 int heightW = 600;
 
+float minwidthW;
+
+int nodeDelay;
+int displayDelay;
+
 //set the minimun width of the row
-int minwidthW = widthW/4;
+float minWidthCoeff ;
+
 
 //craw crtesian or polar coordiantes
-boolean displayCartesian = true;
+boolean displayCartesian;
 
 //draw speed
-int speed = 1;
-int nodeDelay = 500/speed;
-int displayDelay = 1500/speed;
+int speed ;
+
  
 
 
 //layer space to draw Bezier curve, 0<layerCoeff<1
 float LayerSpace;
-float layerCoeff = 0.8;
+float layerCoeff ;
 
 
 int nodeDepth = 0;
 int startNode = 0;
 int numNodes = 0;
 int totDepth = 0;
-int back_color = 255;
+int back_color;
 float minSup;
 
 
@@ -53,11 +68,22 @@ boolean drawFinished = false;
 Node mouseOnNode;
 
 int maxNumNodesLayer = 0;
-int minNumNodesLayer = 9999;
+int minNumNodesLayer = Integer.MAX_VALUE;
 
 ArrayList<Node> nodeList = new ArrayList<Node>();
 
 void setup() {
+     
+  
+     setParameters();
+     nodeDelay = (int) 500/speed;
+     displayDelay = 1500/speed;
+     makeControls();
+  
+     float minwidthW =  widthW * minWidthCoeff;
+
+  
+
   
   //noLoop();
   //astTime = millis();
@@ -218,7 +244,13 @@ void setup() {
 
 
 void draw() {
+  
+      
+     nodeDelay = (int) 500/speed;
+     displayDelay = 1500/speed;
+     //makeControls();
      
+      
     ellipseMode(CENTER);
     
     //draw one node in each draw() loop, with a delay time nodeDelay, i is the current node index
