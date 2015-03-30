@@ -1,4 +1,4 @@
-import controlP5.*;
+import g4p_controls.*;
  
 
 import java.io.*;
@@ -74,11 +74,14 @@ ArrayList<Node> nodeList = new ArrayList<Node>();
 
 void setup() {
      
-  
+     //! to start GUI
+     createGUI();
+     
+     
      setParameters();
      nodeDelay =   500/speed;
      displayDelay =  1500/speed;
-     makeControls();
+     //makeControls();
      
   
      float minwidthW =  widthW * minWidthCoeff;
@@ -91,6 +94,8 @@ void setup() {
    
   
   size(widthW,heightW);
+   
+   
   frameRate(60);
   
    
