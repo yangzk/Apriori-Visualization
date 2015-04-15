@@ -75,7 +75,7 @@ ArrayList<Node> nodeList = new ArrayList<Node>();
 void setup() {
      
      //! to start GUI
-     createGUI();
+     //createGUI();
      
      
      setParameters();
