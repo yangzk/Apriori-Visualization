@@ -28,24 +28,14 @@ public void startPause(GButton source, GEvent event) { //_CODE_:button_startPaus
 
 public void lastFrame(GButton source, GEvent event) { //_CODE_:button_lastFrame:985331:
   println("button_lastFrame - GButton >> GEvent." + event + " @ " + millis());
-  i--;
-  nodes[i].visited = false;
-  
 } //_CODE_:button_lastFrame:985331:
 
 public void nextFrame(GButton source, GEvent event) { //_CODE_:button_nextFrame:332148:
   println("button_nextFrame - GButton >> GEvent." + event + " @ " + millis());
-  i++;
-  nodes[i].visited = true;
-  
 } //_CODE_:button_nextFrame:332148:
 
 public void restart(GButton source, GEvent event) { //_CODE_:button_restart:541058:
   println("button_restart - GButton >> GEvent." + event + " @ " + millis());
-  for(int ii = 0; ii<i; ii++){
-    nodes[ii].visited = false;
-  }
-  i=0;
 } //_CODE_:button_restart:541058:
 
 
@@ -81,4 +71,3 @@ GButton button_startPause;
 GButton button_lastFrame; 
 GButton button_nextFrame; 
 GButton button_restart; 
-

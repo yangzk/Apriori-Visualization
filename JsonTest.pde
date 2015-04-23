@@ -14,8 +14,8 @@ JSONArray jnodes;
 // 3. choose to draw all parents
 // 4. start buttom
 
-int widthW = 800;
-int heightW = 600;
+int widthW = 400;
+int heightW = 400;
 
 float minwidthW;
 
@@ -32,7 +32,7 @@ boolean displayCartesian;
 //draw speed
 int speed ;
 
- 
+boolean playNow;
 
 
 //layer space to draw Bezier curve, 0<layerCoeff<1
@@ -75,10 +75,18 @@ ArrayList<Node> nodeList = new ArrayList<Node>();
 void setup() {
      
      //! to start GUI
-     //createGUI();
+     createGUI();
+     
+     playNow = true;
      
      
-     setParameters();
+       minWidthCoeff = 0.25;
+      displayCartesian = true;
+      speed = 500; // 1-500
+   
+      layerCoeff = 0.8;
+      back_color = 255;
+  
      nodeDelay =   500/speed;
      displayDelay =  1500/speed;
      //makeControls();
@@ -262,10 +270,10 @@ void draw() {
     //draw one node in each draw() loop, with a delay time nodeDelay, i is the current node index
     if ( i < nbrNodes  ){
       
-       if(millis()-lastTime >nodeDelay){
+       if(millis()-lastTime >nodeDelay && playNow == true){
        //draw all nodes and springs in the current depth, when finished, redraw un-prunned nodes 
        
-
+        
         //node position is determined by all number of nodes (valid and unvalid) in the current depth
 
         //draw current node 
@@ -300,6 +308,10 @@ void draw() {
       nodeCountValid = 0;
       //println("node " + i + " depth = " + currentDepth);
       
+       }else{
+         //when draw is paused, draw everything up to now
+         drawUpToNow();
+ 
        }
       
       
@@ -311,22 +323,7 @@ void draw() {
       
       
       drawFinished = true;
-      
-      background(back_color);
-      for(Node tempNode:nodes){
-        tempNode.display();
-        ArrayList parents = tempNode.getParents();
-        
-        for( Iterator parItr = parents.iterator(); parItr.hasNext();){
-          Node parNode = (Node)parItr.next();
-              
-          Spring spring = new Spring(parNode, tempNode);
-            
-          spring.display();
-          
-        }
-        
-      }
+      drawUpToNow();
                
     }
     
@@ -355,7 +352,7 @@ void draw() {
     
     
     // print the closest node if it is within node circle
-    if(minNode.isWithin(mouseX, mouseY) && drawFinished == true ){
+    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true ){
       
       String printFreq;
       if( minNode.freq == -1){
@@ -385,135 +382,31 @@ void draw() {
        
    
       lastTime2 = millis(); 
-    }else if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true){
-      
-      String printFreq;
-      if( minNode.freq == -1){
-        printFreq = "lack subset in parents, pruned";
-      }else if( minNode.freq < minSup){
-        printFreq = minNode.freq +" < minSupport, pruned";
-      }else{
-        printFreq = String.valueOf(minNode.freq);
-      }
-      
-      println("Mouse on node name = [" + minNode.name + "], depth = " + 
-      minNode.depth + ", index = " + minNode.index + ", freq = " + printFreq);
-      
-      String s = "Node: " + minNode.name;    
-      
-      textSize(20);
-      fill(0);
-      text(s, 20, 20);
     }
+ 
          
       
     
        
 }
+
+void drawUpToNow(){
+       background(back_color);
+      for(Node tempNode:nodes){
+        if(tempNode.visited == true && tempNode.visited == true){
+        tempNode.display();
+        ArrayList parents = tempNode.getParents();
+        
+        for( Iterator parItr = parents.iterator(); parItr.hasNext();){
+          Node parNode = (Node)parItr.next();
+              
+          Spring spring = new Spring(parNode, tempNode);
+            
+          spring.display();
+          
+        }
+        }
+      }
+}
        
      
-      
-   
-   
-/* 
-void mousePressed(){
-    Node minNode = nodes[0];
-    float minDist = widthW;
-    for(Node node:nodes){
-      if(node.isWithin(mouseX, mouseY)){
-        if(node.toDist(mouseX, mouseY) < minDist){
-          minNode = node;
-        }
-      }  
-    }
-    
-    
-    // print the closest node if it is within node circle
-    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true){
-      
-      String printFreq;
-      if( minNode.freq == -1){
-        printFreq = "lack subset in parents, pruned";
-      }else if( minNode.freq < minSup){
-        printFreq = minNode.freq +" < minSupport, pruned";
-      }else{
-        printFreq = String.valueOf(minNode.freq);
-      }
-      
-      println("Mouse on node name = [" + minNode.name + "], depth = " + 
-      minNode.depth + ", index = " + minNode.index + ", freq = " + printFreq);
-           
-      String s = "Node: " + minNode.name;    
-      
-      textSize(20);
-      fill(0);
-      text(s, 20, 20);
-            
- 
- 
-       
-      //highlight all ancestors and springs   
-      
-      minNode.expand(); 
-           
-           
-       
-      
-   
-      lastTime2 = millis(); 
-    }
-}   
-
-
-void mouseMoved(){
-if(millis()-lastTime3 <displayDelay){
-    Node minNode = nodes[0];
-    float minDist = widthW;
-    for(Node node:nodes){
-      if(node.isWithin(mouseX, mouseY)){
-        if(node.toDist(mouseX, mouseY) < minDist){
-          minNode = node;
-        }
-      }  
-    }
-    
-    
-    // print the closest node if it is within node circle
-    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true){
-      
-      String printFreq;
-      if( minNode.freq == -1){
-        printFreq = "lack subset in parents, pruned";
-      }else if( minNode.freq < minSup){
-        printFreq = minNode.freq +" < minSupport, pruned";
-      }else{
-        printFreq = String.valueOf(minNode.freq);
-      }
-      
-      println("Mouse on node name = [" + minNode.name + "], depth = " + 
-      minNode.depth + ", index = " + minNode.index + ", freq = " + printFreq);
-           
-      String s = "Node: " + minNode.name;    
-      
-      textSize(20);
-      fill(0);
-      text(s, 20, 20);
-            
- 
- 
-       
-      //highlight all ancestors and springs   
-      
-      //minNode.expand(); 
-           
-           
-       
-      
-   
-      lastTime3 = millis(); 
-    }
-    
-}
-}
- 
-  */
