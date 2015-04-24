@@ -29,6 +29,8 @@ float minWidthCoeff ;
 //craw crtesian or polar coordiantes
 boolean displayCartesian;
 
+boolean drawTwoParents;
+
 //draw speed
 int speed ;
 
@@ -78,18 +80,19 @@ void setup() {
      createGUI();
      
      playNow = true;
+     drawTwoParents = true;
      
      
        minWidthCoeff = 0.25;
       displayCartesian = true;
-      speed = 500; // 1-500
+      speed = 5; // 1-500
    
       layerCoeff = 0.8;
       back_color = 255;
   
      nodeDelay =   500/speed;
      displayDelay =  1500/speed;
-     //makeControls();
+      
      
   
      float minwidthW =  widthW * minWidthCoeff;
@@ -239,14 +242,13 @@ void setup() {
         String[] parents = node.parentid;           
             
         if (parents[0] != null ){
-
+         
           for (int j=0; j < parents.length; j++){
             for(Node nodepar:nodes){
               if(nodepar.name.equals(parents[j])){
                 node.addParent(nodepar);
               }
-            }
-            
+            }           
            }
       }
 
@@ -257,7 +259,7 @@ void setup() {
   
 
 
-void draw() {
+void draw() {  
   
       
      nodeDelay = (int) 500/speed;
@@ -280,21 +282,25 @@ void draw() {
         nodes[i].display();
         nodes[i].visit();
         
-        //nodes[i].expand();
         
-         //draw parents of the current node
+        //draw parents of the current node
       
         ArrayList parents = nodes[i].getParents();
-         
         
+        if(drawTwoParents == true && parents.get(0) != null){
+          ArrayList tempParents = new ArrayList<Node>();
+          tempParents.add(parents.get(0));
+          tempParents.add(parents.get(1));
+          parents = tempParents;
+        }
+                 
         for( Iterator parItr = parents.iterator(); parItr.hasNext();){
           Node parNode = (Node)parItr.next();
               
           Spring spring = new Spring(parNode, nodes[i]);
             
           spring.display();
-           
-          
+                   
         }
           
             
@@ -391,7 +397,7 @@ void draw() {
 }
 
 void drawUpToNow(){
-       background(back_color);
+      background(back_color);
       for(Node tempNode:nodes){
         if(tempNode.visited == true && tempNode.visited == true){
         tempNode.display();

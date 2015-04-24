@@ -20,7 +20,7 @@ synchronized public void win_draw1(GWinApplet appc, GWinData data) { //_CODE_:wi
 
 public void startPause(GButton source, GEvent event) { //_CODE_:button_startPause:777700:
   println("button1 - GButton >> GEvent." + event + " @ " + millis());
-     if(source == button_startPause && event == GEvent.CLICKED){
+     if(  event == GEvent.CLICKED){
        println("clicked");
        playNow = ! playNow;
    }  
@@ -35,8 +35,9 @@ public void lastFrame(GButton source, GEvent event) { //_CODE_:button_lastFrame:
 
 public void nextFrame(GButton source, GEvent event) { //_CODE_:button_nextFrame:332148:
   println("button_nextFrame - GButton >> GEvent." + event + " @ " + millis());
-  i++;
+  
   nodes[i].visited = true;
+  i++;
   
 } //_CODE_:button_nextFrame:332148:
 
@@ -45,8 +46,18 @@ public void restart(GButton source, GEvent event) { //_CODE_:button_restart:5410
   for(int ii = 0; ii<i; ii++){
     nodes[ii].visited = false;
   }
+  playNow = true;
   i=0;
 } //_CODE_:button_restart:541058:
+
+public void dropList_drawParents(GDropList source, GEvent event) { //_CODE_:drawParents:883009:
+  println("drawParents - GDropList >> GEvent." + event + " @ " + millis());
+  if(source.getSelectedIndex() == 0){
+    drawTwoParents = true;
+  }else{
+    drawTwoParents = false;
+  }
+} //_CODE_:drawParents:883009:
 
 
 
@@ -58,20 +69,27 @@ public void createGUI(){
   G4P.setCursor(ARROW);
   if(frame != null)
     frame.setTitle("Sketch Window");
-  window1 = new GWindow(this, "Window title", 0, 0, 250, 120, false, JAVA2D);
+  window1 = new GWindow(this, "Window title", 0, 0, 250, 150, false, JAVA2D);
   window1.addDrawHandler(this, "win_draw1");
-  button_startPause = new GButton(window1.papplet, 60, 80, 80, 30);
+  button_startPause = new GButton(window1.papplet, 50, 110, 80, 30);
   button_startPause.setText("Start/Pause");
   button_startPause.addEventHandler(this, "startPause");
-  button_lastFrame = new GButton(window1.papplet, 20, 80, 30, 30);
+  button_lastFrame = new GButton(window1.papplet, 10, 110, 30, 30);
   button_lastFrame.setText("<");
   button_lastFrame.addEventHandler(this, "lastFrame");
-  button_nextFrame = new GButton(window1.papplet, 150, 80, 30, 30);
+  button_nextFrame = new GButton(window1.papplet, 140, 110, 30, 30);
   button_nextFrame.setText(">");
   button_nextFrame.addEventHandler(this, "nextFrame");
-  button_restart = new GButton(window1.papplet, 190, 80, 50, 30);
+  button_restart = new GButton(window1.papplet, 180, 110, 50, 30);
   button_restart.setText("Restart");
   button_restart.addEventHandler(this, "restart");
+  drawParents = new GDropList(window1.papplet, 30, 20, 120, 60, 2);
+  drawParents.setItems(loadStrings("list_883009"), 0);
+  drawParents.setLocalColorScheme(GCScheme.CYAN_SCHEME);
+  drawParents.addEventHandler(this, "dropList_drawParents");
+  label1 = new GLabel(window1.papplet, 10, 80, 80, 20);
+  label1.setText("Play Control");
+  label1.setOpaque(false);
 }
 
 // Variable declarations 
@@ -81,4 +99,6 @@ GButton button_startPause;
 GButton button_lastFrame; 
 GButton button_nextFrame; 
 GButton button_restart; 
+GDropList drawParents; 
+GLabel label1; 
 
