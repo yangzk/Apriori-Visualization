@@ -25,7 +25,7 @@ public  class Node{
     
     
     boolean visited;
-    boolean displayCartesian;
+    boolean displaySpiral;
     
     //theta and radius in polar coordiante system
     float theta;
@@ -168,10 +168,22 @@ public  class Node{
       }
     }
     
-    
     public ArrayList getParents(){
       return this.parents;
     }
+    
+    /*
+    public ArrayList getParents(int npars){
+      ArrayList tempParents = new ArrayList<Node>();
+      if(npars>=1){
+      for(int n=0; n<npars; n++){
+        tempParents.add(parents.get(n));
+      }} else{
+        return this.parents;
+      }
+             
+      return tempParents;
+    }*/
     
     public void addParent(Node parent){
       this.parents.add(parent);

@@ -17,7 +17,7 @@ public class Spring{
     stroke(0,255,0,150);
     strokeWeight(1);
     noFill();
-    if(node1.displayCartesian == true){ 
+    if(node1.displaySpiral == false){ 
       bezier(node1.x, node1.y, node1.x, node1.y + LayerSpace,  
       node2.x, node2.y - LayerSpace, node2.x, node2.y);
     }else{
@@ -68,7 +68,7 @@ public class Spring{
     strokeWeight(1);
     noFill();
     
-    if(node1.displayCartesian == true){   
+    if(node1.displaySpiral == false){   
       bezier(node1.x, node1.y, node1.x, node1.y + LayerSpace,  
       node2.x, node2.y - LayerSpace, node2.x, node2.y);
     }else{

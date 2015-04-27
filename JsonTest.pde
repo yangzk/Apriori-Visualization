@@ -27,14 +27,14 @@ float minWidthCoeff ;
 
 
 //craw crtesian or polar coordiantes
-boolean displayCartesian;
+boolean displaySpiral;
 
 boolean drawTwoParents;
 
 //draw speed
 int speed ;
 
-boolean playNow;
+boolean playNow ;
 
 
 //layer space to draw Bezier curve, 0<layerCoeff<1
@@ -78,20 +78,19 @@ void setup() {
      
      //! to start GUI
      createGUI();
+      
      
-     playNow = true;
-     drawTwoParents = true;
-     
-     
-       minWidthCoeff = 0.25;
-      displayCartesian = true;
-      speed = 5; // 1-500
+     playNow = false;
+      
+      minWidthCoeff = 0.25;
+       
+      speed = 100; // 1-500
    
       layerCoeff = 0.8;
       back_color = 255;
   
-     nodeDelay =   500/speed;
-     displayDelay =  1500/speed;
+     nodeDelay = 500/speed;
+     displayDelay = 1500/speed;
       
      
   
@@ -187,7 +186,7 @@ void setup() {
          float numNodesRange = log(maxNumNodesLayer - 1);
          
          
-         if(displayCartesian == true){
+         if(displaySpiral == false){
            LayerSpace = heightW*layerCoeff/(totDepth + 1)/3*2;
          }else{
            LayerSpace = heightW*layerCoeff/(totDepth + 1)/3/10;
@@ -205,11 +204,11 @@ void setup() {
     //assign each node coordinates and its parents   
    
      node.layerSpace = LayerSpace;
-     node.displayCartesian = displayCartesian;
+     node.displaySpiral = displaySpiral;
      node.centroid = new PVector(widthW/2, heightW/2);
       
       
-     if(displayCartesian == true){
+     if(displaySpiral == false){
        
         //display as horizontal tree, control draw range width
        if(node.numNodesLayer >1){
@@ -242,14 +241,20 @@ void setup() {
         String[] parents = node.parentid;           
             
         if (parents[0] != null ){
+          int loopSize = parents.length;
+          if(drawTwoParents == true){
+            loopSize = 2;
+          }
          
-          for (int j=0; j < parents.length; j++){
+          for (int j=0; j < loopSize; j++){
             for(Node nodepar:nodes){
               if(nodepar.name.equals(parents[j])){
                 node.addParent(nodepar);
               }
             }           
            }
+           
+           
       }
 
    } 
@@ -272,28 +277,21 @@ void draw() {
     //draw one node in each draw() loop, with a delay time nodeDelay, i is the current node index
     if ( i < nbrNodes  ){
       
+       
+      
        if(millis()-lastTime >nodeDelay && playNow == true){
        //draw all nodes and springs in the current depth, when finished, redraw un-prunned nodes 
        
         
         //node position is determined by all number of nodes (valid and unvalid) in the current depth
 
-        //draw current node 
-        nodes[i].display();
-        nodes[i].visit();
+         
         
         
-        //draw parents of the current node
-      
+               
+        //draw parents of the current node      
         ArrayList parents = nodes[i].getParents();
-        
-        if(drawTwoParents == true && parents.get(0) != null){
-          ArrayList tempParents = new ArrayList<Node>();
-          tempParents.add(parents.get(0));
-          tempParents.add(parents.get(1));
-          parents = tempParents;
-        }
-                 
+                                
         for( Iterator parItr = parents.iterator(); parItr.hasNext();){
           Node parNode = (Node)parItr.next();
               
@@ -302,7 +300,15 @@ void draw() {
           spring.display();
                    
         }
-          
+        
+        println("Join step"); 
+        
+        nodes[i].display();
+        nodes[i].visit();
+        
+        println("Prune step");
+        println("Check (k-1) subset");
+        println("check frequency");
             
                    
         
@@ -317,7 +323,10 @@ void draw() {
        }else{
          //when draw is paused, draw everything up to now
          drawUpToNow();
- 
+         if(i>0){
+           nodes[i-1].expand();
+           displayNodeInfo(nodes[i-1]);
+         }
        }
       
       
@@ -344,15 +353,7 @@ void draw() {
    
     
     // select node closest to mouse position 
-    Node minNode = nodes[0];
-    float minDist = widthW;
-    for(Node node:nodes){
-      if(node.isWithin(mouseX, mouseY)){
-        if(node.toDist(mouseX, mouseY) < minDist){
-          minNode = node;
-        }
-      }  
-    }
+    Node minNode = getMinNode();
     
  
     
@@ -360,33 +361,13 @@ void draw() {
     // print the closest node if it is within node circle
     if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true ){
       
-      String printFreq;
-      if( minNode.freq == -1){
-        printFreq = "lack subset in parents, pruned";
-      }else if( minNode.freq < minSup){
-        printFreq = minNode.freq +" < minSupport, pruned";
-      }else{
-        printFreq = String.valueOf(minNode.freq);
-      }
-      
-      println("Mouse on node name = [" + minNode.name + "], depth = " + 
-      minNode.depth + ", index = " + minNode.index + ", freq = " + printFreq);
-           
-      String s = "Node: " + minNode.name;    
-      
-      textSize(20);
-      fill(0);
-      text(s, 20, 20);
+
+       displayNodeInfo(minNode);
             
- 
- 
-       
-      //highlight all ancestors and springs   
-      
-      
+       //highlight all ancestors and springs   
+          
       minNode.expand(); 
-       
-   
+          
       lastTime2 = millis(); 
     }
  
@@ -403,6 +384,8 @@ void drawUpToNow(){
         tempNode.display();
         ArrayList parents = tempNode.getParents();
         
+ 
+        
         for( Iterator parItr = parents.iterator(); parItr.hasNext();){
           Node parNode = (Node)parItr.next();
               
@@ -414,5 +397,39 @@ void drawUpToNow(){
         }
       }
 }
-       
+
+void displayNodeInfo(Node thisNode){
+       String printFreq;
+      if( thisNode.freq == -1){
+        printFreq = "lack subset in parents, pruned";
+      }else if( thisNode.freq < minSup){
+        printFreq = thisNode.freq +" < minSupport, pruned";
+      }else{
+        printFreq = String.valueOf(thisNode.freq);
+      }
+      
+      
+  println("Mouse on node name = [" + thisNode.name + "], depth = " + 
+      thisNode.depth + ", index = " + thisNode.index + ", freq = " + printFreq);
+      
+  String s = "Node: " + thisNode.name;    
+      
+      textSize(20);
+      fill(0);
+      text(s, 20, 20);
+} 
+
+public Node getMinNode(){
+    Node minNode = nodes[0];
+    float minDist = widthW;
+    for(Node node:nodes){
+      if(node.isWithin(mouseX, mouseY)){
+        if(node.toDist(mouseX, mouseY) < minDist){
+          minNode = node;
+          continue;
+        }
+      } 
+    }
+    return minNode;
+}
      

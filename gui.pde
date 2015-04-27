@@ -19,6 +19,7 @@ synchronized public void win_draw1(GWinApplet appc, GWinData data) { //_CODE_:wi
 } //_CODE_:window1:827611:
 
 public void startPause(GButton source, GEvent event) { //_CODE_:button_startPause:777700:
+   
   println("button1 - GButton >> GEvent." + event + " @ " + millis());
      if(  event == GEvent.CLICKED){
        println("clicked");
@@ -43,10 +44,12 @@ public void nextFrame(GButton source, GEvent event) { //_CODE_:button_nextFrame:
 
 public void restart(GButton source, GEvent event) { //_CODE_:button_restart:541058:
   println("button_restart - GButton >> GEvent." + event + " @ " + millis());
+  setup();
+  /*
   for(int ii = 0; ii<i; ii++){
     nodes[ii].visited = false;
-  }
-  playNow = true;
+  }*/
+  playNow = false;
   i=0;
 } //_CODE_:button_restart:541058:
 
@@ -58,6 +61,16 @@ public void dropList_drawParents(GDropList source, GEvent event) { //_CODE_:draw
     drawTwoParents = false;
   }
 } //_CODE_:drawParents:883009:
+
+
+public void dropList_drawCartesian(GDropList source, GEvent event) { //_CODE_:drawCartesian:883010:
+  println("drawCartesian - GDropList >> GEvent." + event + " @ " + millis());
+  if(source.getSelectedIndex() == 0){
+    displaySpiral = true;
+  }else{
+    displaySpiral = false;
+  }
+} //_CODE_:drawCartesian:883010:
 
 
 
@@ -84,12 +97,31 @@ public void createGUI(){
   button_restart.setText("Restart");
   button_restart.addEventHandler(this, "restart");
   drawParents = new GDropList(window1.papplet, 30, 20, 120, 60, 2);
+  
+  if(drawTwoParents == true){
   drawParents.setItems(loadStrings("list_883009"), 0);
+  }else{
+  drawParents.setItems(loadStrings("list_883009"), 1);
+  }
+  
   drawParents.setLocalColorScheme(GCScheme.CYAN_SCHEME);
   drawParents.addEventHandler(this, "dropList_drawParents");
+  
   label1 = new GLabel(window1.papplet, 10, 80, 80, 20);
   label1.setText("Play Control");
   label1.setOpaque(false);
+  
+  drawCartesian = new GDropList(window1.papplet, 30, 50, 120, 60, 2); 
+  
+  if(displaySpiral == false){
+    drawCartesian.setItems(loadStrings("list_883010"), 1);
+  }else{
+    drawCartesian.setItems(loadStrings("list_883010"), 0);
+  }
+  
+  drawCartesian.setLocalColorScheme(GCScheme.CYAN_SCHEME);
+  drawCartesian.addEventHandler(this, "dropList_drawCartesian");
+  
 }
 
 // Variable declarations 
@@ -100,5 +132,5 @@ GButton button_lastFrame;
 GButton button_nextFrame; 
 GButton button_restart; 
 GDropList drawParents; 
+GDropList drawCartesian;
 GLabel label1; 
-
