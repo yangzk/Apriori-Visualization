@@ -76,15 +76,14 @@ ArrayList<Node> nodeList = new ArrayList<Node>();
 
 void setup() {
      
-     //! to start GUI
+     //start GUI
      createGUI();
-      
-     
+           
      playNow = false;
       
       minWidthCoeff = 0.25;
        
-      speed = 100; // 1-500
+      speed = 1; // 1-500
    
       layerCoeff = 0.8;
       back_color = 255;
@@ -183,8 +182,7 @@ void setup() {
       }
          
          
-         float numNodesRange = log(maxNumNodesLayer - 1);
-         
+         float numNodesRange = log(maxNumNodesLayer - 1);        
          
          if(displaySpiral == false){
            LayerSpace = heightW*layerCoeff/(totDepth + 1)/3*2;
@@ -192,11 +190,7 @@ void setup() {
            LayerSpace = heightW*layerCoeff/(totDepth + 1)/3/10;
          }
      
-
-
-
-
-
+ 
      
    for(Node node:nodes){
      
@@ -231,6 +225,7 @@ void setup() {
         
      }  
         
+        //map node R=10~30
         if(node.freq >=0){
           node.r = sqrt(map(node.freq*node.freq,0,1,100,900));
         }
@@ -274,44 +269,39 @@ void draw() {
       
     ellipseMode(CENTER);
     
-    //draw one node in each draw() loop, with a delay time nodeDelay, i is the current node index
+    //draw node one by one, i is the current node index
     if ( i < nbrNodes  ){
       
-       
-      
-       if(millis()-lastTime >nodeDelay && playNow == true){
-       //draw all nodes and springs in the current depth, when finished, redraw un-prunned nodes 
-       
+       lastTime3 = millis();
+       //when drawing is ongoing and time exceeds a loop delay, draw a node 
+       //this if() only runs only one iterate
+       if(millis()-lastTime >2 *nodeDelay && playNow == true){
         
-        //node position is determined by all number of nodes (valid and unvalid) in the current depth
-
-         
-        
-        
-               
-        //draw parents of the current node      
+        //get all parents of the current node, display parents and spring 
+        //JOIN STEP: 1) highlight the two direct parents
+        // 2) draw directions from parents to child(the current node)
         ArrayList parents = nodes[i].getParents();
                                 
         for( Iterator parItr = parents.iterator(); parItr.hasNext();){
-          Node parNode = (Node)parItr.next();
-              
-          Spring spring = new Spring(parNode, nodes[i]);
-            
-          spring.display();
-                   
+          Node parNode = (Node)parItr.next();             
+          Spring spring = new Spring(parNode, nodes[i]);         
+          spring.display();                 
         }
+        
+         
+        //nodes[i].drawCircle();
+        
         
         println("Join step"); 
         
+        //PRUNE STEP: 1) after depth>1, get all subsets (by highlighting 
+        //all parents)
+        //2) if(freq==-1),draw blue node
+        //3) if(freq<minSup),draw red node
+        //if(freq>minSup), draw black
         nodes[i].display();
         nodes[i].visit();
-        
-        println("Prune step");
-        println("Check (k-1) subset");
-        println("check frequency");
-            
-                   
-        
+         
       
       i++;
       lastTime = millis();
@@ -323,9 +313,18 @@ void draw() {
        }else{
          //when draw is paused, draw everything up to now
          drawUpToNow();
+           
          if(i>0){
-           nodes[i-1].expand();
-           displayNodeInfo(nodes[i-1]);
+           
+           //1. draw the node's two parents
+           if(millis()-lastTime >nodeDelay){
+             nodes[i-1].highlightTwoParents();
+           }
+           
+           //2. draw the unknown node
+           nodes[i-1].drawCircle();
+           
+           //displayNodeInfo(nodes[i-1]);
          }
        }
       
@@ -336,7 +335,7 @@ void draw() {
       
     } else{
       
-      
+      //draw has finished
       drawFinished = true;
       drawUpToNow();
                
@@ -355,9 +354,7 @@ void draw() {
     // select node closest to mouse position 
     Node minNode = getMinNode();
     
- 
-    
-    
+     
     // print the closest node if it is within node circle
     if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true ){
       

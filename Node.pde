@@ -139,6 +139,28 @@ public  class Node{
       }
     }
     
+    public boolean isFreq(){
+      if (this.freq >= minSup ){
+        return true;
+      }else{
+        return false;
+      }
+    }
+    
+    public void drawCircle(){
+      
+      //strokeWeight(10);
+      //stroke(0,255,0,150);
+      noStroke();
+      fill(0,0,0,150);
+      ellipse(this.x, this.y, 15, 15);
+      //this.display();
+      
+      fill(255,255,255);
+      noStroke();
+      ellipse(this.x, this.y, 13, 13);
+    }
+    
     
     public void highlight(){
       
@@ -196,9 +218,11 @@ public  class Node{
     
     public void expand(){
       
+      this.drawInfoOnNode();
+      
       float LayerSpace  = this.layerSpace;
       
-      this.highlight();
+      //this.highlight();
       
       Iterator<Node> parItr = this.parents.iterator();
             
@@ -212,12 +236,42 @@ public  class Node{
         spring.highlight();
         
         parNode.expand(); 
-         
+                 
+      }
+            
+    }
+    
+    public void highlightTwoParents(){
+      
+      Iterator<Node> parItr = this.parents.iterator();
+      int itr=0;
+            
+      while(parItr.hasNext() && itr<2){
         
+        Node parNode = (Node)parItr.next();
+        parNode.highlight();
+              
+        Spring spring = new Spring(parNode, this);        
+            
+        spring.highlight();
+        
+        itr++; 
+                 
       }
       
-      
     }
+    
+    
+    public void drawInfoOnNode(){
+          
+      
+      textSize(10);
+      fill(0);
+      text(this.name, this.x-5, this.y-10);
+    }
+    
+    
+    
     
     
   }

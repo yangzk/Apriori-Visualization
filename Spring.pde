@@ -18,8 +18,13 @@ public class Spring{
     strokeWeight(1);
     noFill();
     if(node1.displaySpiral == false){ 
+      
+      
       bezier(node1.x, node1.y, node1.x, node1.y + LayerSpace,  
       node2.x, node2.y - LayerSpace, node2.x, node2.y);
+      
+      
+      
     }else{
 
 
@@ -67,7 +72,8 @@ public class Spring{
     stroke(0,0,0,20);
     strokeWeight(1);
     noFill();
-    
+   
+   //draw in cartesian mode 
     if(node1.displaySpiral == false){   
       bezier(node1.x, node1.y, node1.x, node1.y + LayerSpace,  
       node2.x, node2.y - LayerSpace, node2.x, node2.y);
@@ -108,13 +114,7 @@ public class Spring{
         curveVertex(node2.x, node2.y); // is also the last control point
         endShape();
   
-      
-     
-      
-      
-       
-      
-   
+    
     }
     
   }
