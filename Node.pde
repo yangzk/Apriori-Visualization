@@ -30,7 +30,11 @@ public  class Node{
     //theta and radius in polar coordiante system
     float theta;
     float rad;
-    PVector centroid = new PVector(0,0);;
+    PVector centroid = new PVector(0,0);
+    
+    color fillColor;
+    
+    
     
     Node(String id, String name, float freq, String[] parentid)
     {
@@ -58,6 +62,23 @@ public  class Node{
       this.theta = theta;
       this.rad = rad;
       this.centroid = centroid;
+      
+      if (this.freq >= minSup ){
+        
+        //node with freq > minSup --> black
+        this.fillColor = color(0,0,0,120);
+                
+      }else if (this.freq >= 0){
+        
+         //prune due to low support --> red
+        this.fillColor = color(255,0,0); 
+                 
+      }else if (this.freq == -1){
+        
+        //prune due to absence of subset --> blue       
+        this.fillColor = color(0,0,255);  
+        
+       }
     }
     
     
@@ -99,44 +120,14 @@ public  class Node{
     }
       
     
-   
-    
-    public void moveto(float px, float py, float time){
-      
-      if( this.x != px && this.y != py){
-        PVector dist = new PVector(px - this.x, py - this.y);
-        PVector speed = PVector.div(dist,time);
-         
-        this.x = this.x + speed.x;
-        this.y = this.y + speed.y;
-        
-      }
-        
-    }
+ 
     
     public void display(){
       
       noStroke();
-      
-      if (this.freq >= minSup ){
-        
-        //node with freq > minSup --> black
-        fill(0,0,0,120);
-        ellipse(this.x, this.y, this.r, this.r);
-        
-      }else if (this.freq >= 0){
-        
-         //prune due to low support --> red
-        fill(255,0,0,120); 
-        ellipse(this.x, this.y, this.r, this.r);
-        
-      }else if (this.freq == -1){
-        
-        //prune due to absence of subset --> blue       
-        fill(0,0,255,120);  
-        ellipse(this.x, this.y, this.r, this.r);
-        
-      }
+      fill(fillColor);
+      ellipse(this.x, this.y, this.r, this.r);
+     
     }
     
     public boolean isFreq(){
@@ -149,26 +140,33 @@ public  class Node{
     
     public void drawCircle(){
       
-      //strokeWeight(10);
-      //stroke(0,255,0,150);
       noStroke();
-      fill(0,0,0,150);
-      ellipse(this.x, this.y, 15, 15);
-      //this.display();
+       
+       
+      fill(green);
+      ellipse(this.x, this.y, 20, 20);
+       
       
-      fill(255,255,255);
-      noStroke();
-      ellipse(this.x, this.y, 13, 13);
+      fill(white);
+      ellipse(this.x, this.y, 15, 15);
+       
     }
     
     
     public void highlight(){
       
-      float newr = this.r ;
+      float newr = this.r  ;
+      noStroke();
       
-      stroke(0,255,0);
+      stroke(green);
       strokeWeight(3);
       
+      fill(this.fillColor);
+      ellipse(this.x, this.y, newr+3, newr+3);
+      
+       
+      
+      /*
       if (this.freq >= minSup ){
         
         //node with freq > minSup --> black
@@ -187,7 +185,7 @@ public  class Node{
         fill(0,0,255,120);  
         ellipse(this.x, this.y, newr, newr);
         
-      }
+      }*/
     }
     
     public ArrayList getParents(){
@@ -241,6 +239,85 @@ public  class Node{
             
     }
     
+    
+    public void flash(){
+      float newr = this.r;
+       
+      if(this.freq == -1){
+        //flash this node and parent node which is pruned
+        //fill(255,255,255);  
+        //ellipse(this.x, this.y, newr, newr);
+        noStroke();
+        fill(0,0,255,120);  
+        ellipse(this.x, this.y, newr, newr);
+        fill(255,255,255);  
+        ellipse(this.x, this.y, newr, newr);
+ 
+        
+        Iterator<Node> parItr = this.parents.iterator();
+            
+        while(parItr.hasNext()){        
+          Node parNode = (Node)parItr.next();
+          parNode.flash();                 
+        }
+                
+      }else if( this.freq < minSup){
+        //flash this node
+        //fill(255,255,255); 
+        //ellipse(this.x, this.y, newr, newr);
+        noStroke();
+        fill(255,0,0,120); 
+        ellipse(this.x, this.y, newr, newr);
+        fill(255,255,255); 
+        ellipse(this.x, this.y, newr, newr);
+ 
+      }
+    }
+    
+    public void expandParents(){
+      
+      //this.drawInfoOnNode();
+      
+      float LayerSpace  = this.layerSpace;
+      
+      //this.highlight();
+      
+      Iterator<Node> parItr = this.parents.iterator();
+            
+      while(parItr.hasNext()){
+        
+        Node parNode = (Node)parItr.next();
+        parNode.highlight();
+        parNode.drawInfoOnNode();
+              
+        Spring spring = new Spring(parNode, this);        
+            
+        spring.highlight();
+        
+        //parNode.expand(); 
+                 
+      }
+            
+    }
+    
+    public void highlightParSpring(){
+      Iterator<Node> parItr = this.parents.iterator();
+      int itr=0;
+            
+      while(parItr.hasNext() && itr<2){
+        
+        Node parNode = (Node)parItr.next();
+        
+        parNode.drawInfoOnNode();
+              
+        Spring spring = new Spring(parNode, this);        
+            
+        spring.highlight();
+        
+        itr++;                 
+      }      
+    }
+    
     public void highlightTwoParents(){
       
       Iterator<Node> parItr = this.parents.iterator();
@@ -249,12 +326,10 @@ public  class Node{
       while(parItr.hasNext() && itr<2){
         
         Node parNode = (Node)parItr.next();
-        parNode.highlight();
-              
-        Spring spring = new Spring(parNode, this);        
-            
-        spring.highlight();
         
+        parNode.drawInfoOnNode();
+        parNode.highlight();
+                      
         itr++; 
                  
       }

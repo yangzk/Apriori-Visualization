@@ -24,7 +24,10 @@ public void startPause(GButton source, GEvent event) { //_CODE_:button_startPaus
      if(  event == GEvent.CLICKED){
        println("clicked");
        playNow = ! playNow;
-   }  
+   } 
+  button_startPause.setEnabled(true); 
+  button_lastFrame.setEnabled(true);
+  button_nextFrame.setEnabled(true);
 } //_CODE_:button_startPause:777700:
 
 public void lastFrame(GButton source, GEvent event) { //_CODE_:button_lastFrame:985331:
@@ -67,11 +70,31 @@ public void dropList_drawCartesian(GDropList source, GEvent event) { //_CODE_:dr
   println("drawCartesian - GDropList >> GEvent." + event + " @ " + millis());
   if(source.getSelectedIndex() == 0){
     displaySpiral = true;
+    button_startPause.setEnabled(false);
+    button_lastFrame.setEnabled(false);
+    button_nextFrame.setEnabled(false);
+    playNow = false;
   }else{
     displaySpiral = false;
+    button_startPause.setEnabled(false);
+    button_lastFrame.setEnabled(false);
+    button_nextFrame.setEnabled(false);
+    playNow = false;
   }
 } //_CODE_:drawCartesian:883010:
 
+public void slider_changeSpeed(GCustomSlider source, GEvent event) { //_CODE_:speed_slider:711720:
+  println("speed_slider - GCustomSlider >> GEvent." + event + " @ " + millis());
+  println("speed = " + source.getValueI());
+  speed = source.getValueI();
+  
+} //_CODE_:speed_slider:711720:
+
+
+public void textarea1_input(GTextArea source, GEvent event) { //_CODE_:textarea1:688922:
+  println("textarea1 - GTextArea >> GEvent." + event + " @ " + millis());
+  
+} //_CODE_:textarea1:688922:
 
 
 // Create all the GUI controls. 
@@ -82,20 +105,21 @@ public void createGUI(){
   G4P.setCursor(ARROW);
   if(frame != null)
     frame.setTitle("Sketch Window");
-  window1 = new GWindow(this, "Window title", 0, 0, 250, 150, false, JAVA2D);
+  window1 = new GWindow(this, "Window title", 0, 0, 250, 500, false, JAVA2D);
   window1.addDrawHandler(this, "win_draw1");
-  button_startPause = new GButton(window1.papplet, 50, 110, 80, 30);
+  button_startPause = new GButton(window1.papplet, 50, 30, 80, 30);
   button_startPause.setText("Start/Pause");
   button_startPause.addEventHandler(this, "startPause");
-  button_lastFrame = new GButton(window1.papplet, 10, 110, 30, 30);
+  button_lastFrame = new GButton(window1.papplet, 10, 30, 30, 30);
   button_lastFrame.setText("<");
   button_lastFrame.addEventHandler(this, "lastFrame");
-  button_nextFrame = new GButton(window1.papplet, 140, 110, 30, 30);
+  button_nextFrame = new GButton(window1.papplet, 140, 30, 30, 30);
   button_nextFrame.setText(">");
   button_nextFrame.addEventHandler(this, "nextFrame");
-  button_restart = new GButton(window1.papplet, 180, 110, 50, 30);
+  button_restart = new GButton(window1.papplet, 180, 30, 50, 30);
   button_restart.setText("Restart");
   button_restart.addEventHandler(this, "restart");
+  /*
   drawParents = new GDropList(window1.papplet, 30, 20, 120, 60, 2);
   
   if(drawTwoParents == true){
@@ -105,13 +129,24 @@ public void createGUI(){
   }
   
   drawParents.setLocalColorScheme(GCScheme.CYAN_SCHEME);
-  drawParents.addEventHandler(this, "dropList_drawParents");
+  drawParents.addEventHandler(this, "dropList_drawParents");*/
   
-  label1 = new GLabel(window1.papplet, 10, 80, 80, 20);
+  label1 = new GLabel(window1.papplet, 5, 10, 80, 20);
+  label1.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
   label1.setText("Play Control");
   label1.setOpaque(false);
   
-  drawCartesian = new GDropList(window1.papplet, 30, 50, 120, 60, 2); 
+  label2 = new GLabel(window1.papplet, 5, 80, 100, 20);
+  label2.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
+  label2.setText("Speed Control");
+  label2.setOpaque(false);
+  
+  label3 = new GLabel(window1.papplet, 5, 120, 100, 20);
+  label3.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
+  label3.setText("Draw Method");
+  label3.setOpaque(false);
+  
+  drawCartesian = new GDropList(window1.papplet, 100, 120, 120, 60, 2); 
   
   if(displaySpiral == false){
     drawCartesian.setItems(loadStrings("list_883010"), 1);
@@ -122,6 +157,24 @@ public void createGUI(){
   drawCartesian.setLocalColorScheme(GCScheme.CYAN_SCHEME);
   drawCartesian.addEventHandler(this, "dropList_drawCartesian");
   
+  speed_slider = new GCustomSlider(window1.papplet, 100, 80, 100, 30, "grey_blue");
+  speed_slider.setShowValue(true);
+  speed_slider.setShowLimits(true);
+  speed_slider.setLimits(1, 1, 5);
+  speed_slider.setNbrTicks(5);
+  speed_slider.setStickToTicks(true);
+  speed_slider.setShowTicks(true);
+  speed_slider.setNumberFormat(G4P.INTEGER, 0);
+  speed_slider.setOpaque(false);
+  speed_slider.addEventHandler(this, "slider_changeSpeed");
+  
+  
+  textarea1 = new GTextArea(window1.papplet, 5, 180, 240, 300, G4P.SCROLLBARS_VERTICAL_ONLY);
+  textarea1.setOpaque(true);
+  textarea1.addEventHandler(this, "textarea1_input");
+   
+  textarea1.setTextEditEnabled(false);
+
 }
 
 // Variable declarations 
@@ -134,3 +187,7 @@ GButton button_restart;
 GDropList drawParents; 
 GDropList drawCartesian;
 GLabel label1; 
+GLabel label2;
+GLabel label3;
+GCustomSlider speed_slider; 
+GTextArea textarea1; 

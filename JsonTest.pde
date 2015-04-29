@@ -14,8 +14,8 @@ JSONArray jnodes;
 // 3. choose to draw all parents
 // 4. start buttom
 
-int widthW = 400;
-int heightW = 400;
+int widthW = 600;
+int heightW = 600;
 
 float minwidthW;
 
@@ -73,6 +73,12 @@ int maxNumNodesLayer = 0;
 int minNumNodesLayer = Integer.MAX_VALUE;
 
 ArrayList<Node> nodeList = new ArrayList<Node>();
+
+
+color white = color(255,255,255);
+color blue = color(0,0,255,120);
+color red = color(255,0,0,120);
+color green = color(0,255,0);
 
 void setup() {
      
@@ -272,27 +278,33 @@ void draw() {
     //draw node one by one, i is the current node index
     if ( i < nbrNodes  ){
       
+       //
+       
+      
        lastTime3 = millis();
        //when drawing is ongoing and time exceeds a loop delay, draw a node 
        //this if() only runs only one iterate
-       if(millis()-lastTime >2 *nodeDelay && playNow == true){
+       if(millis()-lastTime >5 *nodeDelay && playNow == true){
         
+         
         //get all parents of the current node, display parents and spring 
         //JOIN STEP: 1) highlight the two direct parents
         // 2) draw directions from parents to child(the current node)
-        ArrayList parents = nodes[i].getParents();
-                                
-        for( Iterator parItr = parents.iterator(); parItr.hasNext();){
-          Node parNode = (Node)parItr.next();             
-          Spring spring = new Spring(parNode, nodes[i]);         
-          spring.display();                 
+        if(nodes[i].depth>=1){
+           
+          ArrayList parents = nodes[i].getParents();
+                                  
+          for( Iterator parItr = parents.iterator(); parItr.hasNext();){
+            Node parNode = (Node)parItr.next();             
+            Spring spring = new Spring(parNode, nodes[i]);         
+            spring.display();                 
+          }
         }
-        
          
         //nodes[i].drawCircle();
         
         
-        println("Join step"); 
+         
         
         //PRUNE STEP: 1) after depth>1, get all subsets (by highlighting 
         //all parents)
@@ -313,18 +325,53 @@ void draw() {
        }else{
          //when draw is paused, draw everything up to now
          drawUpToNow();
+         
+         
            
          if(i>0){
            
-           //1. draw the node's two parents
-           if(millis()-lastTime >nodeDelay){
-             nodes[i-1].highlightTwoParents();
+           
+           if(millis()-lastTime > 4* nodeDelay){
+               //4. if prune happens, draw a highlight/flash
+             //textarea1.appendText("Pruning node [" + nodes[i].name + "] \n" );
+             nodes[i].flash();
+ 
+             nodes[i].highlight();
+             
+    
+             nodes[i].expandParents();
+             nodes[i].drawInfoOnNode();
+             
+              
+             
+             
+           }else if(millis()-lastTime >3*nodeDelay){
+            //3. expand all its subset parents
+            //nodes[i].highlightTwoParents();
+            //textarea1.appendText("Geting node [" + nodes[i].name + "] subsets \n" );
+            nodes[i].drawCircle();
+            nodes[i].expandParents();
+            nodes[i].drawInfoOnNode();
+             
+           
+           }else if(millis()-lastTime >2* nodeDelay){
+             //2. draw unknown node and two strings
+             nodes[i].highlightTwoParents();
+             nodes[i].highlightParSpring();
+             nodes[i].drawCircle();
+             nodes[i].drawInfoOnNode();
+             
+           }else if(millis()-lastTime >1* nodeDelay){
+             //1. highlight the node's two parents
+             
+           
+           //textarea1.appendText("Generating node [" + nodes[i].name + "] \n" );
+           
+           nodes[i].highlightTwoParents();
+           
+                          
            }
            
-           //2. draw the unknown node
-           nodes[i-1].drawCircle();
-           
-           //displayNodeInfo(nodes[i-1]);
          }
        }
       
