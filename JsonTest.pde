@@ -4,6 +4,9 @@ import g4p_controls.*;
 import java.io.*;
 import java.util.*;
 
+import java.awt.Font;
+import java.awt.*;
+
 JSONObject json;
 JSONArray jnodes;
 
@@ -45,6 +48,7 @@ float layerCoeff ;
 int nodeDepth = 0;
 int startNode = 0;
 int numNodes = 0;
+int numItems = 0;
 int totDepth = 0;
 int back_color;
 float minSup;
@@ -81,9 +85,14 @@ color red = color(255,0,0,120);
 color green = color(0,255,0);
 
 void setup() {
+   size(widthW,heightW); 
+   frameRate(5);
+   smooth();
      
      //start GUI
      createGUI();
+     
+     logText +="Loading node information ... ";
            
      playNow = false;
       
@@ -104,21 +113,20 @@ void setup() {
   
 
   
-  //noLoop();
+  
   //astTime = millis();
    
   
-  size(widthW,heightW);
-   
-   
-  frameRate(60);
+ 
+  
   
    
 
   json = loadJSONObject("/Users/zhenkai-Yang/Dropbox/Desktop/Thesis/apriori/test.json");
 
-  nbrNodes = json.getInt("numNode");
+  nbrNodes = json.getInt("numNodes");
   minSup = json.getFloat("minSup");
+  numItems = json.getInt("numItems");
 
   println("number nodes = " + nbrNodes);
   println("min support = " + minSup);
@@ -259,14 +267,17 @@ void setup() {
       }
 
    } 
-  
+ //textarea1.appendText("Done. Ready to draw. ");
+ textarea1.appendText("Input configuration: " + numItems + " items" );
+ textarea1.appendText("Done. Ready to draw. \n");
+ textarea1.setText(logText);
 }
 
   
 
 
 void draw() {  
-  
+    button_lastFrame.setEnabled(false);
       
      nodeDelay = (int) 500/speed;
      displayDelay = 1500/speed;
@@ -329,26 +340,36 @@ void draw() {
          
            
          if(i>0){
-           
+           button_lastFrame.setEnabled(true);
            
            if(millis()-lastTime > 4* nodeDelay){
                //4. if prune happens, draw a highlight/flash
              //textarea1.appendText("Pruning node [" + nodes[i].name + "] \n" );
-             nodes[i].flash();
+             //nodes[i].flash();
+             
+              
  
              nodes[i].highlight();
              
     
              nodes[i].expandParents();
              nodes[i].drawInfoOnNode();
-             
+             if(nodes[i].freq == -1){
+               textarea1.appendText("[PRUNE] Prunning node [" + nodes[i].name + "] due to lack of subsets in parents. \n" );
+             }else if(nodes[i].freq<minSup){
+               textarea1.appendText("[PRUNE] Prunning node [" + nodes[i].name + "], freq=" + nodes[i].freq + "< minSup. \n" );
+             }else{
+               textarea1.appendText("[PRUNE] node [" + nodes[i].name + "] is not pruned. \n");
+             }
               
              
              
            }else if(millis()-lastTime >3*nodeDelay){
             //3. expand all its subset parents
             //nodes[i].highlightTwoParents();
-            //textarea1.appendText("Geting node [" + nodes[i].name + "] subsets \n" );
+            if(nodes[i].depth>0){
+              textarea1.appendText("[PRUNE] Geting node [" + nodes[i].name + "]'s subsets. \n" );
+            }
             nodes[i].drawCircle();
             nodes[i].expandParents();
             nodes[i].drawInfoOnNode();
@@ -360,12 +381,13 @@ void draw() {
              nodes[i].highlightParSpring();
              nodes[i].drawCircle();
              nodes[i].drawInfoOnNode();
+             textarea1.appendText("[JOIN] Creating node [" + nodes[i].name + "]. \n");
              
            }else if(millis()-lastTime >1* nodeDelay){
              //1. highlight the node's two parents
              
            
-           //textarea1.appendText("Generating node [" + nodes[i].name + "] \n" );
+           
            
            nodes[i].highlightTwoParents();
            
@@ -445,22 +467,28 @@ void drawUpToNow(){
 void displayNodeInfo(Node thisNode){
        String printFreq;
       if( thisNode.freq == -1){
-        printFreq = "lack subset in parents, pruned";
+        printFreq = "lack of subsets in parents, pruned";
       }else if( thisNode.freq < minSup){
         printFreq = thisNode.freq +" < minSupport, pruned";
       }else{
         printFreq = String.valueOf(thisNode.freq);
       }
       
-      
+   /*   
   println("Mouse on node name = [" + thisNode.name + "], depth = " + 
       thisNode.depth + ", index = " + thisNode.index + ", freq = " + printFreq);
       
-  String s = "Node: " + thisNode.name;    
+ logText += "Mouse on node [" + thisNode.name + "], freq = " + printFreq + "\n";
+ textarea1.setText(logText);*/
+ 
+  textarea1.appendText("Mouse on node [" + thisNode.name + "], freq = " + printFreq + "\n");
       
+  
+      /*
+      String s = "Node: " + thisNode.name;          
       textSize(20);
       fill(0);
-      text(s, 20, 20);
+      text(s, 20, 20);*/
 } 
 
 public Node getMinNode(){

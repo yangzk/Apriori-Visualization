@@ -74,12 +74,14 @@ public void dropList_drawCartesian(GDropList source, GEvent event) { //_CODE_:dr
     button_lastFrame.setEnabled(false);
     button_nextFrame.setEnabled(false);
     playNow = false;
+    textarea1.appendText("Drawing method changed to Spiral Mode. Please Restart. " );
   }else{
     displaySpiral = false;
     button_startPause.setEnabled(false);
     button_lastFrame.setEnabled(false);
     button_nextFrame.setEnabled(false);
     playNow = false;
+    textarea1.appendText("Drawing method changed to Cartesian Mode. Please Restart. " );
   }
 } //_CODE_:drawCartesian:883010:
 
@@ -93,7 +95,7 @@ public void slider_changeSpeed(GCustomSlider source, GEvent event) { //_CODE_:sp
 
 public void textarea1_input(GTextArea source, GEvent event) { //_CODE_:textarea1:688922:
   println("textarea1 - GTextArea >> GEvent." + event + " @ " + millis());
-  
+ 
 } //_CODE_:textarea1:688922:
 
 
@@ -169,11 +171,13 @@ public void createGUI(){
   speed_slider.addEventHandler(this, "slider_changeSpeed");
   
   
-  textarea1 = new GTextArea(window1.papplet, 5, 180, 240, 300, G4P.SCROLLBARS_VERTICAL_ONLY);
-  textarea1.setOpaque(true);
-  textarea1.addEventHandler(this, "textarea1_input");
-   
+  textarea1 = new GTextArea(window1.papplet, 5, 180, 240, 300, G4P.SCROLLBARS_VERTICAL_ONLY );
+  textarea1.setOpaque(false);
+  textarea1.addEventHandler(this, "textarea1_input"); 
+  textarea1.setFont(new Font("", Font.PLAIN, 10));
+  textarea1.setText(logText, 240);  
   textarea1.setTextEditEnabled(false);
+   
 
 }
 
@@ -191,3 +195,4 @@ GLabel label2;
 GLabel label3;
 GCustomSlider speed_slider; 
 GTextArea textarea1; 
+String logText="";
