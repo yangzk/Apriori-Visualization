@@ -98,7 +98,7 @@ void setup() {
       
       minWidthCoeff = 0.25;
        
-      speed = 1; // 1-500
+      speed = 3; // 1-500
    
       layerCoeff = 0.8;
       back_color = 255;
@@ -278,6 +278,7 @@ void setup() {
 
 void draw() {  
     button_lastFrame.setEnabled(false);
+    button_nextFrame.setEnabled(false);
       
      nodeDelay = (int) 500/speed;
      displayDelay = 1500/speed;
@@ -324,6 +325,12 @@ void draw() {
         //if(freq>minSup), draw black
         nodes[i].display();
         nodes[i].visit();
+        
+        
+        textarea1.appendText("[JOIN] Creating node [" + nodes[i].name + "]. \n");
+       
+ 
+
          
       
       i++;
@@ -333,7 +340,7 @@ void draw() {
       nodeCountValid = 0;
       //println("node " + i + " depth = " + currentDepth);
       
-       }else{
+       }else if (playNow == true){
          //when draw is paused, draw everything up to now
          drawUpToNow();
          
@@ -354,14 +361,16 @@ void draw() {
     
              nodes[i].expandParents();
              nodes[i].drawInfoOnNode();
+             
+              
              if(nodes[i].freq == -1){
                textarea1.appendText("[PRUNE] Prunning node [" + nodes[i].name + "] due to lack of subsets in parents. \n" );
              }else if(nodes[i].freq<minSup){
                textarea1.appendText("[PRUNE] Prunning node [" + nodes[i].name + "], freq=" + nodes[i].freq + "< minSup. \n" );
              }else{
                textarea1.appendText("[PRUNE] node [" + nodes[i].name + "] is not pruned. \n");
-             }
-              
+             } 
+             
              
              
            }else if(millis()-lastTime >3*nodeDelay){
@@ -369,7 +378,7 @@ void draw() {
             //nodes[i].highlightTwoParents();
             if(nodes[i].depth>0){
               textarea1.appendText("[PRUNE] Geting node [" + nodes[i].name + "]'s subsets. \n" );
-            }
+            } 
             nodes[i].drawCircle();
             nodes[i].expandParents();
             nodes[i].drawInfoOnNode();
@@ -380,9 +389,10 @@ void draw() {
              nodes[i].highlightTwoParents();
              nodes[i].highlightParSpring();
              nodes[i].drawCircle();
-             nodes[i].drawInfoOnNode();
-             textarea1.appendText("[JOIN] Creating node [" + nodes[i].name + "]. \n");
-             
+             nodes[i].drawInfoOnNode();            
+        /*     if(nodes[i].depth>0){
+               textarea1.appendText("[JOIN] Creating node [" + nodes[i].name + "]. \n");
+             } */
            }else if(millis()-lastTime >1* nodeDelay){
              //1. highlight the node's two parents
              

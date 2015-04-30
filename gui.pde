@@ -169,6 +169,7 @@ public void createGUI(){
   speed_slider.setNumberFormat(G4P.INTEGER, 0);
   speed_slider.setOpaque(false);
   speed_slider.addEventHandler(this, "slider_changeSpeed");
+  speed_slider.setValue(3);
   
   
   textarea1 = new GTextArea(window1.papplet, 5, 180, 240, 300, G4P.SCROLLBARS_VERTICAL_ONLY );
