@@ -10,7 +10,7 @@ This is an algorithm to visualize the Apriori Algorithm developed with Processin
     
     displayCartesian -- to draw horizontal tree or polar tree
     
-    speed -- draw speed 1 to 500
+    speed -- draw speed 1 to 5
   
 
 Node.pde -- Node class
