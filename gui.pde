@@ -109,16 +109,17 @@ public void createGUI(){
     frame.setTitle("Sketch Window");
   window1 = new GWindow(this, "Window title", 0, 0, 250, 500, false, JAVA2D);
   window1.addDrawHandler(this, "win_draw1");
-  button_startPause = new GButton(window1.papplet, 50, 30, 80, 30);
-  button_startPause.setText("Start/Pause");
+  button_startPause = new GButton(window1.papplet, 50, 180, 80, 30);
+  button_startPause.setText(" > II ");
+  //button_startPause.setFont(new Font("Monospaced", Font.PLAIN, 12));
   button_startPause.addEventHandler(this, "startPause");
-  button_lastFrame = new GButton(window1.papplet, 10, 30, 30, 30);
+  button_lastFrame = new GButton(window1.papplet, 10, 180, 30, 30);
   button_lastFrame.setText("<");
   button_lastFrame.addEventHandler(this, "lastFrame");
-  button_nextFrame = new GButton(window1.papplet, 140, 30, 30, 30);
+  button_nextFrame = new GButton(window1.papplet, 140, 180, 30, 30);
   button_nextFrame.setText(">");
   button_nextFrame.addEventHandler(this, "nextFrame");
-  button_restart = new GButton(window1.papplet, 180, 30, 50, 30);
+  button_restart = new GButton(window1.papplet, 180, 180, 50, 30);
   button_restart.setText("Restart");
   button_restart.addEventHandler(this, "restart");
   /*
@@ -133,22 +134,35 @@ public void createGUI(){
   drawParents.setLocalColorScheme(GCScheme.CYAN_SCHEME);
   drawParents.addEventHandler(this, "dropList_drawParents");*/
   
-  label1 = new GLabel(window1.papplet, 5, 10, 80, 20);
+  
+  label0 = new GLabel(window1.papplet, 0, 0, 250, 50);
+  label0.setTextAlign(GAlign.CENTER, GAlign.TOP);
+  label0.setText("AprioriViz");
+  label0.setFont(new Font("Monospaced", Font.PLAIN, 25));
+  label0.setOpaque(false);
+  
+  
+  label0 = new GLabel(window1.papplet, 0, 35, 250, 50);
+  label0.setTextAlign(GAlign.CENTER, GAlign.TOP);
+  label0.setText("An Interactive Apriori Algorithm Visualzier \n © 2015 Zhenkai Yang");
+  label0.setOpaque(false);
+  
+  label1 = new GLabel(window1.papplet, 5, 155, 80, 20);
   label1.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
   label1.setText("Play Control");
   label1.setOpaque(false);
   
-  label2 = new GLabel(window1.papplet, 5, 80, 100, 20);
+  label2 = new GLabel(window1.papplet, 5, 125, 100, 20);
   label2.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
   label2.setText("Speed Control");
   label2.setOpaque(false);
   
-  label3 = new GLabel(window1.papplet, 5, 120, 100, 20);
+  label3 = new GLabel(window1.papplet, 5, 90, 100, 20);
   label3.setTextAlign(GAlign.LEFT, GAlign.MIDDLE);
   label3.setText("Draw Method");
   label3.setOpaque(false);
   
-  drawCartesian = new GDropList(window1.papplet, 100, 120, 120, 60, 2); 
+  drawCartesian = new GDropList(window1.papplet, 100, 90, 120, 60, 2); 
   
   if(displaySpiral == false){
     drawCartesian.setItems(loadStrings("list_883010"), 1);
@@ -159,7 +173,7 @@ public void createGUI(){
   drawCartesian.setLocalColorScheme(GCScheme.CYAN_SCHEME);
   drawCartesian.addEventHandler(this, "dropList_drawCartesian");
   
-  speed_slider = new GCustomSlider(window1.papplet, 100, 80, 100, 30, "grey_blue");
+  speed_slider = new GCustomSlider(window1.papplet, 100, 120, 100, 30, "grey_blue");
   speed_slider.setShowValue(true);
   speed_slider.setShowLimits(true);
   speed_slider.setLimits(1, 1, 5);
@@ -172,7 +186,7 @@ public void createGUI(){
   speed_slider.setValue(3);
   
   
-  textarea1 = new GTextArea(window1.papplet, 5, 180, 240, 300, G4P.SCROLLBARS_VERTICAL_ONLY );
+  textarea1 = new GTextArea(window1.papplet, 5, 220, 240, 250, G4P.SCROLLBARS_VERTICAL_ONLY );
   textarea1.setOpaque(false);
   textarea1.addEventHandler(this, "textarea1_input"); 
   textarea1.setFont(new Font("", Font.PLAIN, 10));
@@ -191,6 +205,7 @@ GButton button_nextFrame;
 GButton button_restart; 
 GDropList drawParents; 
 GDropList drawCartesian;
+GLabel label0;
 GLabel label1; 
 GLabel label2;
 GLabel label3;
