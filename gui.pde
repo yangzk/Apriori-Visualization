@@ -148,7 +148,7 @@ public void createGUI(){
   
   label0 = new GLabel(window1.papplet, 0, 35, 300, 50);
   label0.setTextAlign(GAlign.CENTER, GAlign.TOP);
-  label0.setText("An Interactive Apriori Algorithm Visualzier \n © 2015 Zhenkai Yang @ KU Leuven");
+  label0.setText("An Interactive Apriori Algorithm Visualzier \n Copyright © 2015 Zhenkai Yang @ KU Leuven");
   label0.setOpaque(false);
   
   label1 = new GLabel(window1.papplet, 25, 155, 80, 20);

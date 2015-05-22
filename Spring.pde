@@ -72,6 +72,12 @@ public class Spring{
     stroke(0,0,0,20);
     strokeWeight(1);
     noFill();
+    
+    if(node1.freq == -1){
+      stroke(0,0,255,100);
+    }else if(node1.freq < minSup){
+      stroke(255,0,0,150);
+    }
    
    //draw in cartesian mode 
     if(node1.displaySpiral == false){   

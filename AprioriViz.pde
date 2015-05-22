@@ -440,7 +440,7 @@ void draw() {
     
      
     // print the closest node if it is within node circle
-    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true ){
+    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true && drawFinished == false){
       
 
        displayNodeInfo(minNode);
@@ -480,6 +480,7 @@ void drawUpToNow(){
 }
 
 void displayNodeInfo(Node thisNode){
+   
        String printFreq;
       if( thisNode.freq == -1){
         printFreq = "lack of subsets in parents, pruned";
