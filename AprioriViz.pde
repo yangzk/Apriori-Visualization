@@ -29,6 +29,9 @@ int displayDelay;
 float minWidthCoeff ;
 
 
+float nodeTransp = 50;
+color nodeColor;
+
 //craw crtesian or polar coordiantes
 boolean displaySpiral;
 
@@ -87,26 +90,30 @@ color green = color(0,255,0);
 void setup() {
    size(widthW,heightW); 
    
-   frameRate(5);
+   frameRate(10);
    
    smooth();
+   colorMode(RGB,255,255,255,255);
+   //blendMode(ADD);
      
      //start GUI
      createGUI();
      
-     logText +="Loading node information ... ";
+      
            
      playNow = false;
       
       minWidthCoeff = 0.25;
        
-      speed = 3; // 1-500
+      speed = 1; // 1-7
    
       layerCoeff = 0.8;
       back_color = 255;
   
-     nodeDelay = 500/speed;
-     displayDelay = 1500/speed;
+     nodeDelay = 500/(speed*speed*speed);
+     displayDelay = 1500/(speed*speed*speed);
+     //nodeDelay = 500/speed;
+     //displayDelay = 1500/speed;
       
      
   
@@ -130,8 +137,8 @@ void setup() {
   minSup = json.getFloat("minSup");
   numItems = json.getInt("numItems");
 
-  println("number nodes = " + nbrNodes);
-  println("min support = " + minSup);
+  //println("number nodes = " + nbrNodes);
+  //println("min support = " + minSup);
   
   jnodes = json.getJSONArray("Node");
   
@@ -197,8 +204,8 @@ void setup() {
           
       }
          
-         
-         float numNodesRange = log(maxNumNodesLayer - 1);        
+         float minNodesRange = log(minNumNodesLayer - 1); 
+         float maxNodesRange = log(maxNumNodesLayer - 1);        
          
          if(displaySpiral == false){
            LayerSpace = heightW*layerCoeff/(totDepth + 1)/3*2;
@@ -206,23 +213,29 @@ void setup() {
            LayerSpace = heightW*layerCoeff/(totDepth + 1)/3/10;
          }
      
- 
+    //println("maxNodesRange = " + maxNodesRange); 
+    nodeTransp =  map(exp(-0.9*maxNodesRange+2.27),0,1,50,255);
+    
+    
+   //println("trans = " + nodeTransp);
      
    for(Node node:nodes){
      
-  
+    node.assignColor();
     //assign each node coordinates and its parents   
    
      node.layerSpace = LayerSpace;
      node.displaySpiral = displaySpiral;
      node.centroid = new PVector(widthW/2, heightW/2);
       
+     
+     //println("transparant = " + nodeTransp);
       
      if(displaySpiral == false){
        
         //display as horizontal tree, control draw range width
        if(node.numNodesLayer >1){
-        float nodeWidth = map(log(node.numNodesLayer - 1), minNumNodesLayer, numNodesRange, minwidthW, widthW);
+        float nodeWidth = map(log(node.numNodesLayer - 1), minNodesRange, maxNodesRange, minwidthW, widthW);
         node.x = nodeWidth*1.0/(node.numNodesLayer + 1)*(node.index + 1) + (widthW - nodeWidth)*1.0/2;
        }else{    
         node.x = widthW/2;
@@ -264,19 +277,19 @@ void setup() {
               }
             }           
            }
-           
-           
+                     
       }
 
    } 
  //textarea1.appendText("Done. Ready to draw. ");
- textarea1.setText("\n");
- textarea1.appendText("Input configuration: " + numItems + " items, " + nbrNodes + " nodes, minSup = " + minSup +", \n" );
- textarea1.appendText("Ready to draw. \n");
- 
+ //textarea1.setText(" ");
+ textarea1.setText("Input configuration: " + numItems + " items, " + nbrNodes + " nodes, minSup = " + minSup +". \n" );
+ textarea1.appendText("Ready to draw.");
  
  button_lastFrame.setEnabled(false);
  button_nextFrame.setEnabled(false);
+  
+
 }
 
   
@@ -285,8 +298,10 @@ void setup() {
 void draw() {  
     frame.setTitle("Visualization Panel");
       
-     nodeDelay = (int) 500/speed;
+     nodeDelay =  500/speed;
      displayDelay = 1500/speed;
+     nodeDelay = 500/(speed*speed);
+     displayDelay = 1500/(speed*speed);
      //makeControls();
      
       
@@ -295,19 +310,19 @@ void draw() {
     //draw node one by one, i is the current node index
     if ( i < nbrNodes  ){
       
-       //
        
-      
        lastTime3 = millis();
        //when drawing is ongoing and time exceeds a loop delay, draw a node 
        //this if() only runs only one iterate
+       
        if(millis()-lastTime >5 *nodeDelay && playNow == true){
-        
+         button_restart.setEnabled(false);
          
         //get all parents of the current node, display parents and spring 
         //JOIN STEP: 1) highlight the two direct parents
         // 2) draw directions from parents to child(the current node)
-        if(nodes[i].depth>=1){
+        
+        if(nodes[i].depth>1){
            
           ArrayList parents = nodes[i].getParents();
                                   
@@ -320,9 +335,7 @@ void draw() {
          
         //nodes[i].drawCircle();
         
-        
          
-        
         //PRUNE STEP: 1) after depth>1, get all subsets (by highlighting 
         //all parents)
         //2) if(freq==-1),draw blue node
@@ -332,8 +345,15 @@ void draw() {
         nodes[i].visit();
         
         
-        textarea1.appendText("[JOIN] Creating node [" + nodes[i].name + "]. \n");
-       
+        //textarea1.
+        if(nodes[i].depth<2){
+          appendText("[JOIN] Creating node [" + nodes[i].name + "]");
+          /*
+          if(nodes[i].freq < minSup){
+            appendText("[PRUNE] a posteriori pruning node [" + nodes[i].name + "], freq=" + nodes[i].freq + "< minSup" );
+          }*/
+      
+        }
  
 
          
@@ -345,8 +365,34 @@ void draw() {
       nodeCountValid = 0;
       //println("node " + i + " depth = " + currentDepth);
       
-       }else if (true){
+       }else{
          //when draw is paused, draw everything up to now
+         //
+         
+         if(playNow == false){           
+           button_restart.setEnabled(true);
+           
+           Node minNode = getMinNode();
+    
+     
+    // print the closest node if it is within node circle
+    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true ){
+      
+
+       displayNodeInfo(minNode);
+            
+       //highlight all ancestors and springs   
+          
+      minNode.expand(); 
+      minNode.highlight();
+          
+       
+    }
+           
+           
+         }
+         
+         
          drawUpToNow();
          
          
@@ -369,11 +415,14 @@ void draw() {
              
                
              if(nodes[i].freq == -1){
-               textarea1.appendText("[PRUNE] Prunning node [" + nodes[i].name + "] due to lack of subsets in parents. \n" );
+               //textarea1.
+               appendText("[PRUNE] a priori pruning node [" + nodes[i].name + "]");
              }else if(nodes[i].freq<minSup){
-               textarea1.appendText("[PRUNE] Prunning node [" + nodes[i].name + "], freq=" + nodes[i].freq + "< minSup. \n" );
+               //textarea1.
+               appendText("[PRUNE] a posteriori pruning node [" + nodes[i].name + "], freq=" + nodes[i].freq + "< minSup" );
              }else{
-               textarea1.appendText("[PRUNE] node [" + nodes[i].name + "] is not pruned. \n");
+               //textarea1.appendText("[PRUNE] node [" + nodes[i].name + "] is not pruned. \n");
+               //appendText("[PRUNE] node [" + nodes[i].name + "] is not pruned.");
              }  
              
              
@@ -381,8 +430,9 @@ void draw() {
            }else if(millis()-lastTime >3*nodeDelay){
             //3. expand all its subset parents
             //nodes[i].highlightTwoParents();
-            if(nodes[i].depth>0){
-              textarea1.appendText("[PRUNE] Geting node [" + nodes[i].name + "]'s subsets. \n" );
+            if(nodes[i].depth>1){
+              //textarea1.
+              appendText("[PRUNE] Geting node [" + nodes[i].name + "]'s subsets");
             } 
             nodes[i].drawCircle();
             nodes[i].expandParents();
@@ -395,16 +445,14 @@ void draw() {
              nodes[i].highlightParSpring();
              nodes[i].drawCircle();
              nodes[i].drawInfoOnNode();            
-             if(nodes[i].depth>0){
-               textarea1.appendText("[JOIN] Creating node [" + nodes[i].name + "]. \n");
+             if(nodes[i].depth>1){
+               //textarea1.
+               appendText("[JOIN] Creating node [" + nodes[i].name + "]");
              } 
-           }else if(millis()-lastTime >1* nodeDelay){
-             //1. highlight the node's two parents
-             
-           
-           
-           
-           nodes[i].highlightTwoParents();
+                }else if(millis()-lastTime >1* nodeDelay){
+                   //1. highlight the node's two parents
+              
+                    nodes[i].highlightTwoParents();
            
                           
            }
@@ -421,6 +469,9 @@ void draw() {
       
       //draw has finished
       drawFinished = true;
+      playNow = false;
+      button_restart.setEnabled(true);
+      
       drawUpToNow();
                
     }
@@ -428,19 +479,14 @@ void draw() {
     
      
     lastTime2 = 0;
-    if ( millis() - lastTime2 > nodeDelay){
-      noStroke();
-      fill(back_color);
-      rect(0,0,widthW,30);         
-     }
-   
+     
     
     // select node closest to mouse position 
     Node minNode = getMinNode();
     
      
     // print the closest node if it is within node circle
-    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true && drawFinished == false){
+    if(minNode.isWithin(mouseX, mouseY) && minNode.visited == true && drawFinished == true){
       
 
        displayNodeInfo(minNode);
@@ -448,13 +494,12 @@ void draw() {
        //highlight all ancestors and springs   
           
       minNode.expand(); 
+      minNode.highlight();
           
       lastTime2 = millis(); 
     }
  
-         
-      
-    
+ 
        
 }
 
@@ -483,28 +528,17 @@ void displayNodeInfo(Node thisNode){
    
        String printFreq;
       if( thisNode.freq == -1){
-        printFreq = "lack of subsets in parents, pruned";
+        printFreq = "a priori pruned";
       }else if( thisNode.freq < minSup){
-        printFreq = thisNode.freq +" < minSupport, pruned";
+        printFreq = thisNode.freq +" < minSupport, a posteiori pruned";
       }else{
         printFreq = String.valueOf(thisNode.freq);
       }
-      
-   /*   
-  println("Mouse on node name = [" + thisNode.name + "], depth = " + 
-      thisNode.depth + ", index = " + thisNode.index + ", freq = " + printFreq);
-      
- logText += "Mouse on node [" + thisNode.name + "], freq = " + printFreq + "\n";
- textarea1.setText(logText);*/
- 
-  textarea1.appendText("Mouse on node [" + thisNode.name + "], freq = " + printFreq + "\n");
-      
-  
-      /*
-      String s = "Node: " + thisNode.name;          
-      textSize(20);
-      fill(0);
-      text(s, 20, 20);*/
+       
+       
+  //textarea1.
+  appendText("Mouse on node [" + thisNode.name + "], freq = " + printFreq + " ");
+
 } 
 
 public Node getMinNode(){
@@ -519,5 +553,13 @@ public Node getMinNode(){
       } 
     }
     return minNode;
+}
+
+
+public void appendText(String text){
+ GTextArray = textarea1.getTextAsArray();
+ if( ! text.equals(GTextArray[GTextArray.length-1]) ){
+   textarea1.appendText(text);
+ }
 }
      

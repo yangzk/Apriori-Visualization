@@ -69,9 +69,15 @@ public class Spring{
   
   public void display(){
     float LayerSpace  = node1.layerSpace;
-    stroke(0,0,0,20);
+    stroke(0,0,0,nodeTransp*0.5);
     strokeWeight(1);
     noFill();
+    
+    if(node1.freq == -1){
+      stroke(0,0,255,map(nodeTransp,0,255,120,255));
+    }else if(node1.freq < minSup){
+      stroke(255,0,0,map(nodeTransp,0,255,120,255));
+    }
    
    //draw in cartesian mode 
     if(node1.displaySpiral == false){   
@@ -79,8 +85,7 @@ public class Spring{
       node2.x, node2.y - LayerSpace, node2.x, node2.y);
     }else{
       
-      
-       
+            
       PVector[] pv = new PVector[steps];  
        
       PVector centroid = node1.centroid;

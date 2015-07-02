@@ -66,22 +66,43 @@ public  class Node{
       if (this.freq >= minSup ){
         
         //node with freq > minSup --> black
-        this.fillColor = color(0,0,0,120);
+        
+        //this.fillColor = nodeColor;
+        this.fillColor = nodeColor;
                 
       }else if (this.freq >= 0){
         
          //prune due to low support --> red
-        this.fillColor = color(255,0,0); 
+        this.fillColor = color(255,0,0,255); 
                  
       }else if (this.freq == -1){
         
         //prune due to absence of subset --> blue       
-        this.fillColor = color(0,0,255);  
+        this.fillColor = color(0,0,255,255);  
         
        }
     }
     
-    
+    void assignColor(){
+      if (this.freq >= minSup ){
+        
+        //node with freq > minSup --> black
+                
+        this.fillColor = color(0,0,0,nodeTransp);
+                
+      }else if (this.freq >= 0){
+        
+         //prune due to low support --> red
+        this.fillColor = color(255,0,0,map(nodeTransp,0,255,120,255)); 
+                 
+      }else if (this.freq == -1){
+        
+        //prune due to absence of subset --> blue       
+        this.fillColor = color(0,0,255,map(nodeTransp,0,255,120,255));  
+        
+       }
+      
+    }
     
     int getDepth(){
       return depth;
@@ -125,7 +146,8 @@ public  class Node{
     public void display(){
       
       noStroke();
-      fill(fillColor);
+      fill(this.fillColor);
+       
       ellipse(this.x, this.y, this.r, this.r);
      
     }
