@@ -1,17 +1,12 @@
 # Apriori-Visualization 
 
-This is an algorithm to visualize the Apriori Algorithm developed with Processing (processing.org). It contains these files:
+This is a program to visualize the Apriori Algorithm developed within Processing (processing.org). Its source code contains these files:
 
   JsonTest.pde -- the main file to run with the following parameters to modify 
   
     widthW -- window width
     
     heightW -- window height
-    
-    displayCartesian -- to draw horizontal tree or polar tree
-    
-    speed -- draw speed 1 to 5
-  
 
 Node.pde -- Node class
 
